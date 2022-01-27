@@ -43,10 +43,42 @@ fn create_tile(commands: &mut Commands, num: u64, position: Position) {
         });
 }
 
-fn setup(mut commands: Commands) {
-    commands.spawn_bundle(OrthographicCameraBundle::new_2d());
+#[derive(Component)]
+struct Background;
+
+fn create_board(commands: &mut Commands) {
+    commands
+        .spawn_bundle(SpriteBundle {
+            sprite: Sprite {
+                color: Color::BEIGE,
+                custom_size: Some(Vec2::new(TILE_SIZE * 4.4, TILE_SIZE * 4.4)),
+                ..Default::default()
+            },
+            ..Default::default()
+        })
+        .insert(Background);
     for i in 0..SIDE_LENGTH as i32 {
         for j in 0..SIDE_LENGTH as i32 {
+            commands
+                .spawn_bundle(SpriteBundle {
+                    sprite: Sprite {
+                        color: Color::GRAY,
+                        custom_size: Some(Vec2::new(TILE_SIZE, TILE_SIZE)),
+                        ..Default::default()
+                    },
+                    transform: Position::new(i, j).into(),
+                    ..Default::default()
+                })
+                .insert(Background);
+        }
+    }
+}
+
+fn setup(mut commands: Commands) {
+    commands.spawn_bundle(OrthographicCameraBundle::new_2d());
+    create_board(&mut commands);
+    for i in 1..SIDE_LENGTH as i32 {
+        for j in 1..SIDE_LENGTH as i32 {
             create_tile(&mut commands, 2, Position::new(i, j));
         }
     }
