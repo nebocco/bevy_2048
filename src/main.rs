@@ -21,13 +21,17 @@ impl Position {
             y: (i / SIDE_LENGTH) as i32,
         }
     }
+
+    fn to_transform(&self, z: f32) -> Transform {
+        let x = (self.x as f32 - (SIDE_LENGTH - 1) as f32 / 2.0) * (TILE_SIZE * 1.05);
+        let y = (self.y as f32 - (SIDE_LENGTH - 1) as f32 / 2.0) * (TILE_SIZE * 1.05);
+        Transform::from_xyz(x, y, z)
+    }
 }
 
 impl From<Position> for Transform {
     fn from(pos: Position) -> Self {
-        let x = (pos.x as f32 - 1.5) * (TILE_SIZE * 1.05);
-        let y = (pos.y as f32 - 1.5) * (TILE_SIZE * 1.05);
-        Transform::from_xyz(x, y, 0.)
+        pos.to_transform(10.0)
     }
 }
 
@@ -77,7 +81,7 @@ fn create_board(commands: &mut Commands) {
                 custom_size: Some(Vec2::new(TILE_SIZE, TILE_SIZE)),
                 ..Default::default()
             },
-            transform: Position::from_index(i).into(),
+            transform: Position::from_index(i).to_transform(0.0),
             ..Default::default()
         });
     }
@@ -89,23 +93,6 @@ fn setup(mut commands: Commands) {
     for (idx, num) in [(1, 2), (3, 4), (13, 8)] {
         create_tile(&mut commands, num, Position::from_index(idx));
     }
-}
-
-fn main() {
-    App::new()
-        .insert_resource(WindowDescriptor {
-            title: "2048".to_string(),
-            width: WINDOW_SIZE,
-            height: WINDOW_SIZE,
-            ..Default::default()
-        })
-        .insert_resource(ClearColor(Color::rgb(0.04, 0.04, 0.04)))
-        .add_plugins(DefaultPlugins)
-        .add_startup_system(setup)
-        .add_event::<MoveEvent>()
-        .add_system(send_move_event)
-        .add_system(move_tiles_system)
-        .run();
 }
 
 #[derive(PartialEq, Eq)]
@@ -173,4 +160,22 @@ fn rotate_map(a: &mut [i32]) {
     for (i, &j) in ROT.iter().enumerate() {
         a.swap(i, j)
     }
+}
+
+fn main() {
+    App::new()
+        .insert_resource(WindowDescriptor {
+            title: "2048".to_string(),
+            width: WINDOW_SIZE,
+            height: WINDOW_SIZE,
+            ..Default::default()
+        })
+        .insert_resource(ClearColor(Color::rgb(0.04, 0.04, 0.04)))
+        .add_plugins(DefaultPlugins)
+        .add_startup_system(setup)
+        .add_event::<MoveEvent>()
+        .add_system(send_move_event)
+        .add_system(move_tiles_system)
+        .add_system(bevy::input::system::exit_on_esc_system)
+        .run();
 }
