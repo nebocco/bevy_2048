@@ -26,7 +26,7 @@ pub fn move_tiles_system(
     mut app_state: ResMut<State<GameState>>,
 ) {
     let mut moved = false;
-    for ev in ev_move.iter() {
+    if let Some(ev) = ev_move.iter().next() {
         let (dx, dy, rot) = match ev {
             MoveEvent::Left => (-1, 0, 0),
             MoveEvent::Right => (1, 0, 2),
@@ -56,8 +56,10 @@ pub fn move_tiles_system(
             pos.x += dx * map[idx];
             pos.y += dy * map[idx];
             *trans = pos.clone().into();
+            if map[idx] != 0 {
+                moved = true;
+            }
         }
-        moved = true;
     }
     if moved {
         app_state.set(GameState::Spawn).unwrap();
