@@ -31,7 +31,7 @@ impl From<Position> for Transform {
     }
 }
 
-#[derive(Component)]
+#[derive(Clone, Copy, PartialEq, Eq, Component)]
 pub struct Tile(pub u64);
 
 impl From<Tile> for Color {

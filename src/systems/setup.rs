@@ -8,14 +8,15 @@ pub fn setup(mut commands: Commands) {
     }
 }
 
-fn create_tile(commands: &mut Commands, num: u64, position: Position) {
+pub fn create_tile(commands: &mut Commands, num: u64, position: Position) {
+    let tile = Tile(num);
     commands
         .spawn()
-        .insert(Tile(num))
+        .insert(tile)
         .insert(position.clone())
         .insert_bundle(SpriteBundle {
             sprite: Sprite {
-                color: Color::from(Tile(num)),
+                color: Color::from(tile),
                 custom_size: Some(Vec2::new(TILE_SIZE, TILE_SIZE)),
                 ..Default::default()
             },
@@ -33,7 +34,7 @@ fn create_board(commands: &mut Commands) {
         },
         ..Default::default()
     });
-    for i in 0..SIDE_LENGTH * SIDE_LENGTH {
+    for i in 0..TILE_NUM {
         commands.spawn_bundle(SpriteBundle {
             sprite: Sprite {
                 color: Color::GRAY,
