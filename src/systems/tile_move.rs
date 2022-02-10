@@ -23,7 +23,9 @@ pub fn send_move_event(keyboard: Res<Input<KeyCode>>, mut ev_move: EventWriter<M
 pub fn move_tiles_system(
     mut ev_move: EventReader<MoveEvent>,
     mut query: Query<(&mut Transform, &mut Position), With<Tile>>,
+    mut app_state: ResMut<State<GameState>>,
 ) {
+    let mut moved = false;
     for ev in ev_move.iter() {
         let (dx, dy, rot) = match ev {
             MoveEvent::Left => (-1, 0, 0),
@@ -32,7 +34,7 @@ pub fn move_tiles_system(
             MoveEvent::Down => (0, -1, 1),
         };
 
-        let mut map = vec![0; SIDE_LENGTH * SIDE_LENGTH];
+        let mut map = vec![0; TILE_NUM];
         for (_, pos) in query.iter() {
             map[pos.index()] = 1;
         }
@@ -55,12 +57,15 @@ pub fn move_tiles_system(
             pos.y += dy * map[idx];
             *trans = pos.clone().into();
         }
+        moved = true;
+    }
+    if moved {
+        app_state.set(GameState::Spawn).unwrap();
     }
 }
 
 fn rotate_map(a: &mut [i32]) {
-    const ROT: [usize; SIDE_LENGTH * SIDE_LENGTH] =
-        [3, 7, 11, 15, 11, 6, 10, 14, 14, 10, 10, 13, 15, 13, 14, 15];
+    const ROT: [usize; TILE_NUM] = [3, 7, 11, 15, 11, 6, 10, 14, 14, 10, 10, 13, 15, 13, 14, 15];
     for (i, &j) in ROT.iter().enumerate() {
         a.swap(i, j)
     }
