@@ -11,13 +11,6 @@ const TILE_SIZE: f32 = 60.;
 const SIDE_LENGTH: usize = 4;
 const TILE_NUM: usize = SIDE_LENGTH * SIDE_LENGTH;
 
-#[derive(Debug, Clone, Eq, PartialEq, Hash)]
-pub enum GameState {
-    Move,
-    Spawn,
-    GameOver,
-}
-
 fn main() {
     App::new()
         .insert_resource(WindowDescriptor {
@@ -32,6 +25,7 @@ fn main() {
         .add_startup_system(setup)
         .add_state(GameState::Move)
         .add_event::<MoveEvent>()
+        .add_event::<GameState>()
         .add_system_set(SystemSet::on_enter(GameState::Move).with_system(check_game_over))
         .add_system_set(
             SystemSet::on_update(GameState::Move)
@@ -41,6 +35,7 @@ fn main() {
         .add_system_set(SystemSet::on_update(GameState::Spawn).with_system(return_to_move_state))
         .add_system_set(SystemSet::on_exit(GameState::Spawn).with_system(create_random_tile))
         .add_system_set(SystemSet::on_enter(GameState::GameOver).with_system(end_game))
+        .add_system_to_stage(CoreStage::PostUpdate, change_state) // label を使って move と spawn が同じフレームに起こるようにする
         .add_system(bevy::input::system::exit_on_esc_system)
         .run();
 }

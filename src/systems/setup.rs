@@ -34,7 +34,7 @@ fn create_board(commands: &mut Commands) {
         },
         ..Default::default()
     });
-    for i in 0..TILE_NUM {
+    for i in 0..SIDE_LENGTH * SIDE_LENGTH {
         commands.spawn_bundle(SpriteBundle {
             sprite: Sprite {
                 color: Color::GRAY,

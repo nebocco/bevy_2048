@@ -1,9 +1,9 @@
-use crate::components::Position;
 use crate::*;
 use rand_xoshiro::rand_core::RngCore;
 
-pub fn return_to_move_state(mut app_state: ResMut<State<GameState>>) {
-    app_state.set(GameState::Move).unwrap();
+pub fn return_to_move_state(mut ev_state: EventWriter<GameState>) {
+    println!("move to move state");
+    ev_state.send(GameState::Move);
 }
 
 pub fn create_random_tile(
@@ -11,6 +11,7 @@ pub fn create_random_tile(
     query: Query<&Position, With<Tile>>,
     mut rng: ResMut<Xoshiro256StarStar>,
 ) {
+    print!("create tile!");
     let mut map = vec![false; TILE_NUM];
     for pos in query.iter() {
         map[pos.index()] = true;
