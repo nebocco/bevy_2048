@@ -11,23 +11,19 @@ pub enum MoveEvent {
 pub fn send_move_event(keyboard: Res<Input<KeyCode>>, mut ev_move: EventWriter<MoveEvent>) {
     if keyboard.just_pressed(KeyCode::Left) {
         ev_move.send(MoveEvent::Left);
-        println!("sent Left!");
     } else if keyboard.just_pressed(KeyCode::Right) {
         ev_move.send(MoveEvent::Right);
-        println!("sent Right!");
     } else if keyboard.just_pressed(KeyCode::Up) {
         ev_move.send(MoveEvent::Up);
-        println!("sent Up!");
     } else if keyboard.just_pressed(KeyCode::Down) {
         ev_move.send(MoveEvent::Down);
-        println!("sent Down!");
     }
 }
 
 pub fn move_tiles_system(
     mut ev_move: EventReader<MoveEvent>,
     mut query: Query<(&mut Transform, &mut Position), With<Tile>>,
-    mut ev_state: EventWriter<GameState>,
+    mut app_state: ResMut<State<GameState>>,
 ) {
     let mut moved = false;
     if let Some(ev) = ev_move.iter().next() {
@@ -66,8 +62,7 @@ pub fn move_tiles_system(
         }
     }
     if moved {
-        println!("move to spawn state");
-        ev_state.send(GameState::Spawn);
+        app_state.set(GameState::Spawn).unwrap();
     }
 }
 

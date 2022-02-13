@@ -35,7 +35,6 @@ fn main() {
         .add_system_set(SystemSet::on_update(GameState::Spawn).with_system(return_to_move_state))
         .add_system_set(SystemSet::on_exit(GameState::Spawn).with_system(create_random_tile))
         .add_system_set(SystemSet::on_enter(GameState::GameOver).with_system(end_game))
-        .add_system_to_stage(CoreStage::PostUpdate, change_state) // label を使って move と spawn が同じフレームに起こるようにする
         .add_system(bevy::input::system::exit_on_esc_system)
         .run();
 }

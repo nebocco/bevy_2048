@@ -1,9 +1,12 @@
 use crate::*;
 use rand_xoshiro::rand_core::RngCore;
 
-pub fn return_to_move_state(mut ev_state: EventWriter<GameState>) {
-    println!("move to move state");
-    ev_state.send(GameState::Move);
+pub fn return_to_move_state(
+    mut keyboard: ResMut<Input<KeyCode>>,
+    mut app_state: ResMut<State<GameState>>,
+) {
+    keyboard.clear();
+    app_state.set(GameState::Move).unwrap();
 }
 
 pub fn create_random_tile(
